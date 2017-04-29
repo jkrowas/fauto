@@ -77,7 +77,6 @@ def do_upload(browser, apps_card, grant_id, upload_file):
         logger.error("Unexpected error: %s while processing grant %s", str(sys.exc_info()[0]), grant_id)
         return 1
 
-
 with sp.Browser('chrome') as browser:
     # Visit URL
     browser.visit(url)
