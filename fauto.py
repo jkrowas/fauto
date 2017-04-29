@@ -18,9 +18,9 @@ username = 'nina@chanzuckerberg.com'
 password = 'Welcome!'
 grant_id = 'HCA-A-1703-00264'
 upload_file = "c:\\temp\\OISP_July.pdf"
-
+upload_path = "c:\\temp\\"
 url = test_landing_url
-
+input_file = "c:\\users\\john\\PycharmProjects\\fauto\\grants.csv"
 
 def get_grants_to_process(filename):
     grants = []
@@ -59,7 +59,9 @@ def do_upload(browser, apps_card, grant_id, upload_file):
                         logger.info("Uploading document %s", upload_file)
                         app.Open.Edit.set_edit_text(upload_file)
                         app.Open.Open.close_click()
+                        browser.is_element_present_by_name('plupload_file_type', wait_time = 5)
                         browser.select("plupload_file_type", "3417")  # 3417 is "Other Document"
+                        browser.is_element_present_by_text('Start upload', wait_time = 5)
                         browser.find_by_text('Start upload').click()
                         browser.is_text_present('Upload Complete!', wait_time=60)
                         logger.info("Upload complete")
@@ -73,7 +75,7 @@ def do_upload(browser, apps_card, grant_id, upload_file):
             return 1
     except:
         logger.error("Unexpected error: %s while processing grant %s", str(sys.exc_info()[0]), grant_id)
-        return 0
+        return 1
 
 
 with sp.Browser('chrome') as browser:
@@ -105,12 +107,12 @@ with sp.Browser('chrome') as browser:
         logger.info("Couldn't find Applications card, exiting")
         exit()
 
-    grants = get_grants_to_process("c:\\users\\kr9\\PycharmProjects\\fauto\\grants.csv")
+    grants = get_grants_to_process(input_file)
     logger.info("Doing %i grants", len(grants))
     success_count = 0
     unprocessed = []
     for g in grants:
-        upload_file = "c:\\temp\\" + g + ".pdf"
+        upload_file = upload_path + g + ".pdf"
         if do_upload(browser, apps_card, g, upload_file) != 0:
             unprocessed.append(str(g))
             logger.warning("Couldn't complete upload for %s", g)
